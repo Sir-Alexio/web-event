@@ -11,6 +11,7 @@ using WebEvent.API.Services.Abstract;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,9 +31,36 @@ builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(s =>
+{
+   
+    s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Place to add JWT with Bearer",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
 
-//JWT from book
+    s.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            },
+            Name = "Bearer",
+        },
+            new List<string>()
+        }
+    });
+});
+
+//JWT 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = Environment.GetEnvironmentVariable("SECRET");
 

@@ -14,7 +14,7 @@ namespace WebEvent.API.Repository
 
         public async Task<User?> GetUserByEmail(string email)
         {
-            User? user = await base.GetByCondition(s => s.Email == email, false).Result.FirstOrDefaultAsync();
+            User? user = await _db.Users.Where(x => x.Email == email).Include(u => u.Events).FirstOrDefaultAsync();
             return user;
         }
     }
