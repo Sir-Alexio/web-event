@@ -19,6 +19,8 @@ namespace WebEvent.API.Model.Entity
         [Required]
         public byte[] PasswordSalt { get; set; }
         public virtual ICollection<Event>? Events{ get; set; }
+        public bool IsVerified { get; set; } = false;
+        public string VerificationToken { get; set; } = string.Empty;
 
     }
 }

@@ -58,6 +58,35 @@ namespace WebEvent.API.Services
             return true;
         }
 
+        public async Task<bool> VerificationComplite(UserDto dto)
+        {
+            //Get user from database
+            User? user = await _repository.User.GetUserByEmail(dto.Email);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.IsVerified = true;
+
+            try
+            {
+                //Update entity
+                await _repository.User.Update(user);
+
+                //Try save changes to the database
+                await _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+
+                throw new CustomException(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
+            }
+
+            return true;
+        }
+
         public async Task<User> GetUser(string email)
         {
             //Get user with colaborators property
@@ -66,6 +95,20 @@ namespace WebEvent.API.Services
             if (user == null)
             {
                 _logger.LogInfo($"No user found with email: {email}");
+                throw new CustomException(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
+            }
+
+            return user;
+        }
+
+        public async Task<User> GetUserByToken(string token)
+        {
+            //Get user with colaborators property
+            User? user = await _repository.User.GetUSerByToken(token);
+
+            if (user == null)
+            {
+                _logger.LogInfo($"No user found with token: {token}");
                 throw new CustomException(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
             }
 

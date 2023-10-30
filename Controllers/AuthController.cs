@@ -32,6 +32,14 @@ namespace WebEvent.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserDto dto)
         {
+            User user = await _userService.GetUser(dto.Email);
+
+            if (!user.IsVerified)
+            {
+                _logger.LogInfo($"User is not verified!");
+                return Unauthorized("User is not verified!");
+            }
+
             bool isUserValid = await _authorizationService.ValidateUser(dto.Password, dto.Email);
 
             //user validation

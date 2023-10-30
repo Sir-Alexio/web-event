@@ -45,6 +45,7 @@ namespace WebEvent.API.Services
                 throw new CustomException(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
             }
 
+
             if (!VerifyPasswordHash(password, _user.Password, _user.PasswordSalt))
             {
                 return false;

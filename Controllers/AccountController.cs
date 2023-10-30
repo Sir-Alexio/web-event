@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
 using System.Security.Claims;
 using System.Text.Json;
 using WebEvent.API.Model.DTO;
@@ -16,11 +19,15 @@ namespace WebEvent.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly ILoggerManager _logger;
+        private readonly IEmailService _emailService;
+        private readonly IMapper _mapper;
 
-        public AccountController(IUserService userService, ILoggerManager logger)
+        public AccountController(IUserService userService, ILoggerManager logger, IEmailService emailService, IMapper mapper)
         {
             _userService = userService;
             _logger = logger;
+            _emailService = emailService;
+            _mapper = mapper;
         }
 
         [Route("modify-user")]
@@ -44,6 +51,9 @@ namespace WebEvent.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(UserDto userDto)
         {
+            userDto.VerificationToken = Guid.NewGuid().ToString();
+            userDto.IsVerified = false;
+
             bool isUserRegistrated = await _userService.Registrate(userDto);
 
             if (!isUserRegistrated)
@@ -52,7 +62,8 @@ namespace WebEvent.API.Controllers
                 return BadRequest("This email is alredy exist");
             }
 
-            return Ok();
+            // Redirect to the "SendEmail" action in the "Account" controller.
+            return RedirectToAction("SendEmail", "Account", new { verificationToken = userDto.VerificationToken });
         }
 
         [Route("change-password")]
@@ -73,5 +84,39 @@ namespace WebEvent.API.Controllers
 
             return Ok();
         }
+
+        [Route("send-email")]
+        [HttpGet]
+        public async Task<IActionResult> SendEmail(string verificationToken)
+        {
+
+            // Generate the verification link using Url.Action.
+            string verificationLink = Url.Action("VerifyEmail", "Account", new { token = verificationToken }, Request.Scheme);
+
+            // Send the verification email to the user.
+            await _emailService.SendVerificationEmailAsync(verificationLink);
+
+            return Ok("User registered. Check your email for verification.");
+        }
+
+
+        [Route("verify-email")]
+        [HttpGet]
+        public async Task<IActionResult> VerifyEmail(string token)
+        {
+            User? user = await _userService.GetUserByToken(token);
+
+            if (user == null)
+            {
+                return Unauthorized("Incorrect verification token");
+            }
+
+            user.IsVerified = true;
+
+            await _userService.VerificationComplite(_mapper.Map<UserDto>(user));
+
+            return Ok(); // Return a response indicating the result of the verification process.
+        }
+
     }
 }
