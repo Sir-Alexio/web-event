@@ -29,6 +29,7 @@ builder.Services.AddScoped<WebEvent.API.Services.Abstract.IAuthenticationService
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -55,9 +55,6 @@ namespace WebEvent.API.Controllers
             //create refresh token
             RefreshToken refreshToken = _authorizationService.CreateRefreshToken();
 
-            //set refresh token to responce header and to user database
-            //await SetRefreshToken(refreshToken,dto.Email);
-
             //send to client jwt token
             return Ok(token);
         }
