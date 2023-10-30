@@ -37,7 +37,7 @@ namespace WebEvent.API.Services
 
         public async Task<bool> ValidateUser(string password, string email)
         {
-            _user = await _repository.User.GetUserByEmail(email);
+            _user = await _repository.Users.GetUserByEmail(email);
 
             if (_user == null)
             {

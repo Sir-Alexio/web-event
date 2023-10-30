@@ -12,8 +12,8 @@ using WebEvent.API.Context;
 namespace WebEvent.API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20231029113403_AddOtherTables")]
-    partial class AddOtherTables
+    [Migration("20231030172605_CreateDataBase")]
+    partial class CreateDataBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,21 @@ namespace WebEvent.API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("EventUser", b =>
+                {
+                    b.Property<int>("CreatedEventsEventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegistedUsersUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CreatedEventsEventId", "RegistedUsersUserId");
+
+                    b.HasIndex("RegistedUsersUserId");
+
+                    b.ToTable("UserEvent", (string)null);
+                });
 
             modelBuilder.Entity("WebEvent.API.Model.Entity.Event", b =>
                 {
@@ -40,12 +55,7 @@ namespace WebEvent.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("EventId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Events");
                 });
@@ -92,6 +102,9 @@ namespace WebEvent.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -104,6 +117,10 @@ namespace WebEvent.API.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("VerificationToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("UserId");
 
                     b.HasIndex("Email")
@@ -112,15 +129,19 @@ namespace WebEvent.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebEvent.API.Model.Entity.Event", b =>
+            modelBuilder.Entity("EventUser", b =>
                 {
-                    b.HasOne("WebEvent.API.Model.Entity.User", "User")
-                        .WithMany("Events")
-                        .HasForeignKey("UserId")
+                    b.HasOne("WebEvent.API.Model.Entity.Event", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedEventsEventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("WebEvent.API.Model.Entity.User", null)
+                        .WithMany()
+                        .HasForeignKey("RegistedUsersUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebEvent.API.Model.Entity.Parameter", b =>
@@ -137,11 +158,6 @@ namespace WebEvent.API.Migrations
             modelBuilder.Entity("WebEvent.API.Model.Entity.Event", b =>
                 {
                     b.Navigation("Parameters");
-                });
-
-            modelBuilder.Entity("WebEvent.API.Model.Entity.User", b =>
-                {
-                    b.Navigation("Events");
                 });
 #pragma warning restore 612, 618
         }

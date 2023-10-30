@@ -28,7 +28,7 @@ namespace WebEvent.API.Controllers
         public async Task<IActionResult> GetEvents()
         {
             User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
-            return Ok(JsonSerializer.Serialize(currentUser.Events));
+            return Ok(JsonSerializer.Serialize(currentUser.CreatedEvents));
         }
 
         [HttpGet]

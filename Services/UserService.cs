@@ -29,14 +29,15 @@ namespace WebEvent.API.Services
         public async Task<bool> UpdateUser(UserDto dto)
         {
             //Get user from database
-            User? user = await _repository.User.GetUserByEmail(dto.Email);
+            User? user = await _repository.Users.GetUserByEmail(dto.Email);
 
             if (user == null)
             {
                 return false;
             }
 
-            // Partial map UserDto to User entity
+
+            //// Partial map UserDto to User entity
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
 
@@ -44,7 +45,7 @@ namespace WebEvent.API.Services
             try
             {
                 //Update entity
-                await _repository.User.Update(user);
+                await _repository.Users.Update(user);
 
                 //Try save changes to the database
                 await _repository.Save();
@@ -58,10 +59,35 @@ namespace WebEvent.API.Services
             return true;
         }
 
+        public async Task<bool> UpdateUser(User user)
+        {
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                //Update entity
+                await _repository.Users.Update(user);
+
+                //Try save changes to the database
+                await _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+
+                throw new CustomException(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
+            }
+
+            return true;
+        }
+
         public async Task<bool> VerificationComplite(UserDto dto)
         {
             //Get user from database
-            User? user = await _repository.User.GetUserByEmail(dto.Email);
+            User? user = await _repository.Users.GetUserByEmail(dto.Email);
 
             if (user == null)
             {
@@ -73,7 +99,7 @@ namespace WebEvent.API.Services
             try
             {
                 //Update entity
-                await _repository.User.Update(user);
+                await _repository.Users.Update(user);
 
                 //Try save changes to the database
                 await _repository.Save();
@@ -90,7 +116,7 @@ namespace WebEvent.API.Services
         public async Task<User> GetUser(string email)
         {
             //Get user with colaborators property
-            User? user = await _repository.User.GetUserByEmail(email);
+            User? user = await _repository.Users.GetUserByEmail(email);
 
             if (user == null)
             {
@@ -104,7 +130,7 @@ namespace WebEvent.API.Services
         public async Task<User> GetUserByToken(string token)
         {
             //Get user with colaborators property
-            User? user = await _repository.User.GetUSerByToken(token);
+            User? user = await _repository.Users.GetUSerByToken(token);
 
             if (user == null)
             {
@@ -118,7 +144,7 @@ namespace WebEvent.API.Services
         public async Task<bool> ChangePassword(ChangePasswordModel changePassword, string email)
         {
             //Get current user by email
-            User? currentUser = await _repository.User.GetUserByEmail(email);
+            User? currentUser = await _repository.Users.GetUserByEmail(email);
 
             bool isUserValid = await _authentication.ValidateUser(changePassword.CurrentPassword, email);
 
@@ -137,7 +163,7 @@ namespace WebEvent.API.Services
 
             currentUser.PasswordSalt = salt;
 
-            await _repository.User.Update(currentUser);
+            await _repository.Users.Update(currentUser);
 
             //Try update changes
             try
@@ -159,12 +185,12 @@ namespace WebEvent.API.Services
             User user = MakeUser(userDto);
 
             //Check if email for user is alredy exist
-            if (await _repository.User.GetUserByEmail(user.Email) != null)
+            if (await _repository.Users.GetUserByEmail(user.Email) != null)
             {
                 return false;
             }
 
-            await _repository.User.Create(user);
+            await _repository.Users.Create(user);
 
             //Check for updating entity
             try

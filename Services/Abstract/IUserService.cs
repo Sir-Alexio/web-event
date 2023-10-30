@@ -11,6 +11,7 @@ namespace WebEvent.API.Services.Abstract
         public Task<User> GetUser(string email);
         public Task<User> GetUserByToken(string token);
         public Task<bool> VerificationComplite(UserDto dto);
+        public Task<bool> UpdateUser(User user);
 
 
     }

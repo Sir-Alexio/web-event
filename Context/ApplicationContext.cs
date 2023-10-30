@@ -25,15 +25,17 @@ namespace WebEvent.API.Context
 
         protected override void OnModelCreating(ModelBuilder model)
         {
-            model.Entity<Event>()
-                .HasOne(x => x.User)
-                .WithMany(x => x.Events)
-                .HasForeignKey(k => k.UserId);
+
 
             model.Entity<Parameter>()
                 .HasOne(x=>x.Event)
                 .WithMany(x=>x.Parameters)
                 .HasForeignKey(k=> k.EventId);
+
+            model.Entity<User>()
+                .HasMany(m => m.CreatedEvents)
+                .WithMany(x => x.RegistedUsers)
+                .UsingEntity(j => j.ToTable("UserEvent"));
         }
     }
 }

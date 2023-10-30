@@ -11,8 +11,7 @@ namespace WebEvent.API.Model.Entity
         [Required]
         public DateTime Date{ get; set; }
         public virtual ICollection<Parameter>? Parameters { get; set; }
-        [Required]  
-        public int UserId { get; set; }
-        public virtual User User { get; set; }
+        public virtual ICollection<User>? RegistedUsers { get; set; }
+
     }
 }

@@ -2,8 +2,8 @@
 {
     public interface IRepositoryManager
     {
-        IUserRepository User { get; }
-
+        IUserRepository Users { get; }
+        IEventRepository Events{ get; }
         Task Save();
     }
 }

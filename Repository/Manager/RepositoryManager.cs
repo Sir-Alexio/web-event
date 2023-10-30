@@ -7,12 +7,13 @@ namespace WebEvent.API.Repository.Manager
     {
         private readonly ApplicationContext _db;
         private IUserRepository _userRepository;
+        private IEventRepository _eventRepository;
         public RepositoryManager(ApplicationContext db)
         {
             _db = db;
         }
 
-        public IUserRepository User
+        public IUserRepository Users
         {
             get
             {
@@ -21,6 +22,19 @@ namespace WebEvent.API.Repository.Manager
                     _userRepository = new UserRepository(_db);
                 }
                 return _userRepository;
+            }
+
+        }
+
+        public IEventRepository Events
+        {
+            get
+            {
+                if (_eventRepository == null)
+                {
+                    _eventRepository = new EventRepository(_db) ;
+                }
+                return _eventRepository;
             }
 
         }
