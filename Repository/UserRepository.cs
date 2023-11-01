@@ -23,5 +23,15 @@ namespace WebEvent.API.Repository
             User? user = await base.GetByCondition(s => s.VerificationToken == token, false).Result.FirstOrDefaultAsync();
             return user;
         }
+
+        public async Task<User?> GetUserWithEventsAndParameters(string email)
+        {
+            User? user = await _db.Users
+                .Include(u => u.CreatedEvents) // Include the CreatedEvents collection
+                .ThenInclude(e => e.Parameters) // Include the Parameters collection for each event
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            return user;
+        }
     }
 }

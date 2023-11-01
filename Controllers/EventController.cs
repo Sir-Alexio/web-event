@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using WebEvent.API.Model.DTO;
 using WebEvent.API.Model.Entity;
 using WebEvent.API.Services.Abstract;
 
@@ -13,15 +16,17 @@ namespace WebEvent.API.Controllers
     {
         private readonly IEventService _eventService;
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public EventController(IEventService eventService, IUserService userService)
+        public EventController(IEventService eventService, IUserService userService, IMapper mapper)
         {
             _eventService = eventService;
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        [Route("all-events")]
+        [Route("events")]
         public async Task<IActionResult> GetAllEvents()
         {
             return Ok(JsonSerializer.Serialize(_eventService.GetAllEvents()));
@@ -30,21 +35,8 @@ namespace WebEvent.API.Controllers
         [HttpPost]
         [Authorize]
         [Route("create-event")]
-        public async Task<IActionResult> CreateEvent()
+        public async Task<IActionResult> CreateEvent(EventDto eventDto)
         {
-            Event ev = new Event();
-            Parameter param = new Parameter();
-
-            param.Title = "first one";
-            param.Value = "Second one";
-
-            ev.EventName = "my first event";
-            ev.Date = DateTime.Now;
-            ev.Parameters = new List<Parameter>
-            {
-                param
-            };
-
             User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
 
             if (currentUser.CreatedEvents == null)
@@ -52,11 +44,29 @@ namespace WebEvent.API.Controllers
                 currentUser.CreatedEvents = new List<Event>();
             }
 
+            var ev = _mapper.Map<EventDto, Event>(eventDto);
+
             currentUser.CreatedEvents.Add(ev);
 
             await _userService.UpdateUser(currentUser);
             
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("user-events")]
+        [Authorize]
+        public async Task<IActionResult> GetUserEvents()
+        {
+            User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            };
+
+            var json = JsonSerializer.Serialize(currentUser.CreatedEvents, options);
+
+            return Ok(json);
         }
 
     }

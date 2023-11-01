@@ -116,7 +116,7 @@ namespace WebEvent.API.Services
         public async Task<User> GetUser(string email)
         {
             //Get user with colaborators property
-            User? user = await _repository.Users.GetUserByEmail(email);
+            User? user = await _repository.Users.GetUserWithEventsAndParameters(email);
 
             if (user == null)
             {
@@ -125,6 +125,7 @@ namespace WebEvent.API.Services
             }
 
             return user;
+        
         }
 
         public async Task<User> GetUserByToken(string token)

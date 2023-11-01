@@ -22,6 +22,17 @@ namespace WebEvent.API.Extentions.Mapping
                .ForMember(dest => dest.VerificationToken, opt => opt.MapFrom(scr => scr.VerificationToken))
                .ForMember(dest => dest.IsVerified, opt => opt.MapFrom(scr => scr.IsVerified))
                .ForMember(dest => dest.Password, opt => opt.Ignore());
+
+            CreateMap<EventDto, Event>()
+            .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
+            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
+            .ForMember(dest => dest.Parameters, opt => opt.MapFrom(src => src.Parameters));
+
+            CreateMap<Event, EventDto>()
+                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
+                .ForMember(dest => dest.Parameters, opt => opt.MapFrom(src => src.Parameters));
+
         }
     }
 }
