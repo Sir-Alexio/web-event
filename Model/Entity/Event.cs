@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebEvent.API.Model.Entity
 {
+    [Index(nameof(EventName), IsUnique = true)]
     public class Event
     {
         [Key]

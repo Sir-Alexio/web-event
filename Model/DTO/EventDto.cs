@@ -8,5 +8,7 @@ namespace WebEvent.API.Model.DTO
         public string EventName { get; set; }
         public DateTime Date { get; set; }
         public ICollection<Parameter>? Parameters { get; set; }
+
+        public virtual ICollection<User>? RegistedUsers { get; set; }
     }
 }

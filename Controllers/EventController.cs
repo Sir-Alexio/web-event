@@ -69,5 +69,44 @@ namespace WebEvent.API.Controllers
             return Ok(json);
         }
 
+        [HttpGet]
+        [Route("registrated-events")]
+        [Authorize]
+        public async Task<IActionResult> GetRegistratedEvents()
+        {
+            User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
+
+            List<Event> events = _eventService.GetRegistratedEvents(currentUser.UserId);
+
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            };
+
+            var json = JsonSerializer.Serialize(events, options);
+
+            return Ok(json);
+        }
+
+        [HttpGet]
+        [Route("registrate-user")]
+        [Authorize]
+        public async Task<IActionResult> RegistrateUser()
+        {
+            User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
+
+            Event ev = await _eventService.GetEventByName("fifth");
+
+            if (ev.RegistedUsers == null)
+            {
+                ev.RegistedUsers = new List<User>();
+            }
+
+            ev.RegistedUsers.Add(currentUser);
+
+            await _eventService.UpdateEvent(ev);
+
+            return Ok();
+        }
     }
 }

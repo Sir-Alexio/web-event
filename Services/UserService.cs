@@ -26,38 +26,38 @@ namespace WebEvent.API.Services
             _authentication = authentication;
         }
 
-        public async Task<bool> UpdateUser(UserDto dto)
-        {
-            //Get user from database
-            User? user = await _repository.Users.GetUserByEmail(dto.Email);
-
-            if (user == null)
+            public async Task<bool> UpdateUser(UserDto dto)
             {
-                return false;
-            }
+                //Get user from database
+                User? user = await _repository.Users.GetUserByEmail(dto.Email);
+
+                if (user == null)
+                {
+                    return false;
+                }
 
 
-            //// Partial map UserDto to User entity
-            user.FirstName = dto.FirstName;
-            user.LastName = dto.LastName;
+                //// Partial map UserDto to User entity
+                user.FirstName = dto.FirstName;
+                user.LastName = dto.LastName;
 
 
-            try
-            {
-                //Update entity
-                await _repository.Users.Update(user);
+                try
+                {
+                    //Update entity
+                    await _repository.Users.Update(user);
 
-                //Try save changes to the database
-                await _repository.Save();
-            }
-            catch (DbUpdateException)
-            {
+                    //Try save changes to the database
+                    await _repository.Save();
+                }
+                catch (DbUpdateException)
+                {
                 
-                throw new CustomException(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
-            }
+                    throw new CustomException(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
+                }
 
-            return true;
-        }
+                return true;
+            }
 
         public async Task<bool> UpdateUser(User user)
         {
