@@ -18,7 +18,7 @@ namespace WebEvent.API.Services
         }
         public async Task<List<Event>> GetAllEvents()
         {
-            return (await _repository.Events.GetAll(false)).ToList();
+            return (await _repository.Events.GetAllEvents());
         }
 
         public async Task<Event> GetEventByName(string name)

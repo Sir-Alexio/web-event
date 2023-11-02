@@ -30,5 +30,11 @@ namespace WebEvent.API.Repository
             Event? ev = await GetByCondition(x => x.EventName == name, false).Result.FirstOrDefaultAsync();
             return ev;
         }
+
+        public async Task<List<Event>> GetAllEvents()
+        {
+            List<Event> events = await _db.Events.Include(x=>x.Parameters).ToListAsync();
+            return events;
+        }
     }
 }

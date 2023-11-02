@@ -31,7 +31,13 @@ namespace WebEvent.API.Controllers
         [Route("events")]
         public async Task<IActionResult> GetAllEvents()
         {
-            return Ok(System.Text.Json.JsonSerializer.Serialize(_eventService.GetAllEvents()));
+            List<Event> events = await _eventService.GetAllEvents();
+
+            List<EventDto> dtos = _mapper.Map<List<EventDto>>(events);
+
+            string json = JsonSerializer.Serialize(dtos);
+
+            return Ok(json);
         }
 
         [HttpPost]
