@@ -99,14 +99,14 @@ namespace WebEvent.API.Controllers
             return Ok(json);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("registrate-user")]
         [Authorize]
-        public async Task<IActionResult> RegistrateUser()
+        public async Task<IActionResult> RegistrateUser([FromBody] string eventName)
         {
             User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
 
-            Event ev = await _eventService.GetEventByName("fifth");
+            Event ev = await _eventService.GetEventByName(eventName);
 
             if (ev.RegistedUsers == null)
             {
