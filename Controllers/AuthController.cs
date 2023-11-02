@@ -59,6 +59,15 @@ namespace WebEvent.API.Controllers
             return Ok(token);
         }
 
+        [HttpGet("user")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
+
+            return Ok(JsonSerializer.Serialize(_mapper.Map<UserDto>(currentUser)));
+        }
+
         private async Task SetRefreshToken(RefreshToken refreshToken, string email)
         {
             //set refresh token to database
