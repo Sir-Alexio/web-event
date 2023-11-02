@@ -15,10 +15,11 @@ namespace WebEvent.API.Services
 
         public async Task SendVerificationEmailAsync(string verificationLink)
         {
+            string str = "freda.luettgen20@ethereal.email";
             var email = new MimeMessage();
 
-            email.From.Add(MailboxAddress.Parse("rahul.christiansen45@ethereal.email"));
-            email.To.Add(MailboxAddress.Parse("rahul.christiansen45@ethereal.email"));
+            email.From.Add(MailboxAddress.Parse(str));
+            email.To.Add(MailboxAddress.Parse(str));
             email.Subject = "Event email verification";
 
             var bodyBuilder = new BodyBuilder();
@@ -28,7 +29,7 @@ namespace WebEvent.API.Services
 
             using var smtp = new SmtpClient();
             smtp.Connect("smtp.ethereal.email", 587, MailKit.Security.SecureSocketOptions.StartTls);
-            smtp.Authenticate("rahul.christiansen45@ethereal.email", "wqBjMaEbASyeA2Y4BN");
+            smtp.Authenticate(str, "46TtKWyZYEguVa2dhC");
             smtp.Send(email);
             smtp.Disconnect(true);
         }

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using WebEvent.API.Model.DTO;
 using WebEvent.API.Model.Entity;
 using WebEvent.API.Services.Abstract;
@@ -29,7 +31,7 @@ namespace WebEvent.API.Controllers
         [Route("events")]
         public async Task<IActionResult> GetAllEvents()
         {
-            return Ok(JsonSerializer.Serialize(_eventService.GetAllEvents()));
+            return Ok(System.Text.Json.JsonSerializer.Serialize(_eventService.GetAllEvents()));
         }
 
         [HttpPost]
@@ -63,8 +65,11 @@ namespace WebEvent.API.Controllers
             {
                 ReferenceHandler = ReferenceHandler.Preserve
             };
+            List<Event>? events = currentUser.CreatedEvents.ToList();
 
-            var json = JsonSerializer.Serialize(currentUser.CreatedEvents, options);
+            List<EventDto> eventDtos = _mapper.Map<List<EventDto>>(events);
+
+            string json = JsonSerializer.Serialize(eventDtos);
 
             return Ok(json);
         }
@@ -83,7 +88,7 @@ namespace WebEvent.API.Controllers
                 ReferenceHandler = ReferenceHandler.Preserve
             };
 
-            var json = JsonSerializer.Serialize(events, options);
+            var json = System.Text.Json.JsonSerializer.Serialize(events, options);
 
             return Ok(json);
         }

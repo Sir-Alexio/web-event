@@ -28,9 +28,13 @@ namespace WebEvent.API.Extentions.Mapping
             .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
             .ForMember(dest => dest.Parameters, opt => opt.MapFrom(src => src.Parameters));
 
+            //CreateMap<Event, EventDto>()
+            //    .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
+            //    .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
+            //    .ForMember(dest => dest.Parameters, opt => opt.MapFrom(src => src.Parameters));
+
+            CreateMap<Parameter, ParameterDto>();
             CreateMap<Event, EventDto>()
-                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
                 .ForMember(dest => dest.Parameters, opt => opt.MapFrom(src => src.Parameters));
 
         }
